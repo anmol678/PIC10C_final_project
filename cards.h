@@ -7,14 +7,14 @@
 #define CARDS_H
 
 enum suit_t {CLUBS, DIAMONDS, HEARTS, SPADES};
-enum rank_t {ACE = 11, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK = 10, QUEEN = 10, KING =10};
+enum rank_t {ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK = 9, QUEEN = 9, KING = 9};
 
 class card {
     //Constructor assigns random rank & suit to card.
     Card();
     
     std::string get_suit() const;
-    std::string get_rank() const;
+    std::string get_rankName() const;
     
     //Converts card rank to number.
     //The possible returns are: 1, 2, 3, 4, 5, 6, 7, 8, 9 and 10
@@ -22,7 +22,7 @@ class card {
     
     //Converts card rank to value.
     //The possible returns are: 1, 2, 3, 4, 5, 6, 7, 8, 9 and 10
-    double get_value() const;
+    int get_value() const;
     
     //Compare rank of two cards. E.g: Eight<Jack is true.
     //Assume Ace is always 11.
