@@ -9,9 +9,12 @@
 #include <cstdlib>
 #include <ctime>
 
+using std::cout;
+using std::cin;
+
 int main() {
 
-    ofstream fout;
+    std::ofstream fout;
     fout.open("gamelog.txt"); //Creates gamelog.txt file
     
     Player player = Player(100); //Player object initialized with amount 100
@@ -28,7 +31,7 @@ int main() {
         int bet = 0;
         char choice;
         
-        cout << endl << "You have $" << money << ". "
+        cout << "\nYou have $" << money << ". "
         << "Enter bet: ";
         cin >> bet; //The bet is input by the player
         
@@ -40,7 +43,7 @@ int main() {
         else {
             fout << "\n-----------------------------------------------\n";
             
-            fout << "\nGame number: " << count << setw(20) << right << "Money left: $" << player.getMoney()
+            fout << "\nGame number: " << count << std::setw(20) << std::right << "Money left: $" << player.getMoney()
             << "\nBet: " << bet << "\n"; //Certain details are written in the gamelog file
             
             do {

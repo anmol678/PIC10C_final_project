@@ -7,7 +7,6 @@
 //Default constructor intializes m amount of money
 Player::Player(int m) {
     money = m;
-    PlayerHand = Hand();
 }
 
 //Accessor: Returns the amount of money

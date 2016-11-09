@@ -4,6 +4,9 @@
 #include "cards.h"
 #include <iostream>
 #include <iomanip>
+#include <fstream>
+
+using std::cout;
 
 //Default constructor initializes two random cards to the hand of cards
 Hand::Hand() {
@@ -14,7 +17,7 @@ Hand::Hand() {
 //Accessor: Prints the last card stored in the hand of cards
 void Hand::printLast() const {
     int i = cards.size() - 1;
-    cout << "\t" << setw(20) << left << cards[i].get_rankName()+" de "+cards[i].get_suit()+"\n";
+    cout << "\t" << std::setw(20) << std::left << cards[i].get_rankName()+" of "+cards[i].get_suit()+"\n";
 }
 
 //Accessor: Finds the total value of all the cards in a hand
@@ -51,14 +54,14 @@ void Hand::sortHand() {
 void Hand::print() {
     sortHand();//The cards are sorted first
     for (int i = 0; i < cards.size(); i++)
-        cout << "\t" << setw(20) << left << cards[i].get_rankName()+" de "+cards[i].get_suit()+"\n";
+        cout << "\t" << std::setw(20) << std::left << cards[i].get_rankName()+" of "+cards[i].get_suit()+"\n";
 }
 
 //Writes all the cards in the hand in the log file
-void Hand::printLog(ofstream& fout) {
+void Hand::printLog(std::ofstream& fout) {
     sortHand();//The cards are sorted first
     
     for (int i = 0; i < cards.size(); i++)
-        fout << "\t" << setw(20) << left << cards[i].get_rankName()+" de "+cards[i].get_suit()+"\n";
+        fout << "\t" << std::setw(20) << std::left << cards[i].get_rankName()+" of "+cards[i].get_suit()+"\n";
 
 }

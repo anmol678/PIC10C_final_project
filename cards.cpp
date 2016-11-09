@@ -5,6 +5,7 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include <string>
 
 //Default constructor for the Card class.
 Card::Card() {
@@ -123,13 +124,13 @@ std::string Card::get_rankName() const {
 }
 
 //Accessor: Assigns a numerical value to card based on rank.
-int Card::get_rank() const {
+int Card::get_rank() const {        
     return static_cast<int>(rank) + 1 ;
 }
 
 //Accessor: Assigns value based on the rank of the card
 int Card::get_value() const {
-    if (get_rankName == "Ace")
+    if (get_rankName() == "Ace")
         return 11;
     else
         return static_cast<int>(rank) + 1;

@@ -2,13 +2,12 @@
 
 #include <string>
 #include <vector>
-#include "card.h"
+#include "cards.h"
 
 #ifndef HAND_H
 #define HAND_H
 
 class Hand {
-    //A vector of Cards
 public:
     //Constructor
     //Initializes hand of cards with two random cards
@@ -38,6 +37,7 @@ public:
     void printLog(std::ofstream& fout);
     
 private:
+    //A vector of Cards
     std::vector<Card> cards;
 };
 
