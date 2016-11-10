@@ -27,6 +27,8 @@ public:
     //Converts card rank to value.
     //The possible returns are: 1, 2, 3, 4, 5, 6, 7, 8, 9 and 10
     int get_value() const;
+    //Changes value of card as in case of Ace
+    void set_value(int n);
     
     //Compare rank of two cards. E.g: Eight<Jack is true.
     //Assume Ace is always 11.
@@ -36,6 +38,7 @@ public:
 private:
     suit_t suit;
     rank_t rank;
+    int value;
 };
 
 #endif

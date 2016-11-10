@@ -5,7 +5,6 @@
 #include "hand.cpp"
 #include "player.cpp"
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <vector>
 #include <iomanip>
@@ -16,47 +15,56 @@ using std::cout;
 using std::cin;
 
 //prints information about the player's hand to the console
-void print_player(std::ostream& out, Player& player){
+void print_player(std::ostream& out, Player& player) {
     out << "\nYour cards: \n";
     out << player;
     out << "Your total is " << player.sum() << ".\n";
 }
 
 //prints information about the dealer's hand to the console
-void print_dealer(std::ostream& out, Hand& dealer){
+void print_dealer(std::ostream& out, Hand& dealer) {
     out << "\nDealer's cards: \n";
     out << dealer;
     out << "The dealer's total is " << dealer.sum() << ".\n";
 }
 
-void dealers_play(Hand& dealer){
-    while (dealer.sum() < 17){//The dealer continues to draw cards till the total value <= 5.5
+//returns true if the player goes bust (i.e. sum exceeds 21)
+bool isBust(Hand& hand) {
+    if (hand.sum() > 21)
+        return true;
+    return false;
+}
+
+//returns true if the player's sum = 21
+bool isBlackjack(Hand& hand) {
+    if (hand.sum() == 21)
+        return true;
+    return false;
+}
+
+//dealer's turn is implemented by this function
+void dealers_play(Hand& dealer) {
+    while (dealer.sum() < 17){
+    //The dealer continues to draw cards till the total value <= 5.5
         dealer.drawCard();
         cout << "\nNew card:\n";
         dealer.printLast();//The new card drawn is displayed
         
+    if(dealer.hasAce() && isBust(dealer))
+        dealer.changeAce();
+
         print_dealer(cout, dealer);
     }
 }
-//saves details about the game to the gamelog text file
-void save_log(std::ofstream& fout, const int& count, const int& bet, Player& player, Hand& dealer){
-    //General details about the game are added to the gamelog text file
-    fout << "\n-----------------------------------------------\n";
-    fout << "\nGame number: " << count << std::setw(20) << std::right << "Money left: $" << player.getMoney()
-    << "\nBet: " << bet << "\n";
-    
-    //Details about player and dealer hands are added to the gamelog text file
-    print_player(fout, player);
-    print_dealer(fout, dealer);
-}
 
 //asks the user to place a bet
-int place_bet(const Player& player){
+int place_bet(const Player& player) {
     int bet = 0;
     cout << "\nYou have $" << player.getMoney() << ". "
     << "Enter bet: ";
-    cin >> bet; //The bet is input by the player
-    
+    //The bet is input by the player
+    cin >> bet;
+
     //If the bet exceeds total money, the player is asked to re-enter the bet
     if (bet > player.getMoney()){
         cout << "You don't have that much money. Please bet again.\n";
@@ -66,7 +74,7 @@ int place_bet(const Player& player){
 }
 
 //compares the final sum of hands of the player and the dealer
-void compare_sum(Player& player, Hand& dealer, int& bet){
+void compare_sum(Player& player, Hand& dealer, int& bet) {
     if (dealer.sum() > 21) {
         cout << "\nDealer is bust. You win " << bet << ".\n";
         player.updateMoney(bet);
@@ -93,26 +101,24 @@ void compare_sum(Player& player, Hand& dealer, int& bet){
         }
     }
 }
+char hit_stand() {
+    std::string choice;
+    char ret;
+    cout << "Do you want another card (hit/stand)? ";
+    cin >> choice; 
+    //Total value of cards is displayed and the player is given a choice to draw another card
+    
+    if (choice == "hit" || choice == "y")
+        ret = 'y';
+    else if (choice == "stand" || choice == "n")
+        ret ='n';
+    else
+        ret = hit_stand();
 
-//returns true if the player goes bust (i.e. sum exceeds 21)
-bool isBust(Player& player){
-    if (player.sum() > 21)
-        return true;
-    return false;
-}
-
-//returns true if the player's sum = 21
-bool isBlackjack(Player& player){
-    if (player.sum() == 21)
-        return true;
-    return false;
+    return ret;
 }
 
 int main() {
-    
-    std::ofstream fout;
-    fout.open("gamelog.txt"); //Creates gamelog.txt file
-    
     Player player = Player(100); //Player object initialized with amount 100
     int count = 0; //Keeps track of the number of games played
     
@@ -128,33 +134,30 @@ int main() {
         char choice;
         int bet = place_bet(player);
         do {
+            if(player.hasAce() && isBust(player))
+                player.changeAce();
+
             //The player's cards are displayed
             print_player(cout, player);
-            
-            bool f = isBust(player);
-            if (f){
+
+            if (isBust(player)){
                 cout << "\nYou are bust. You lose " << bet << ".\n";
                 player.updateMoney(-bet);
                 break;
             }
             
-            f = isBlackjack(player);
-            if (f){
+            if (isBlackjack(player)){
                 cout << "\nBlackjack. You win " << bet << ".\n";
                 player.updateMoney(bet);
                 break;
             }
 
-            cout << "Do you want another card (y/n)? ";
-            cin >> choice; //Total value of cards is displayed and the player is given a choice to draw another card
+            choice = hit_stand();
             
             //If the player declines to draw another card the dealer's cards are displayed and dealer takes the game forward. Subsequently, the total values of player's hand and dealer's hand are compared and it is decided if the player wins or loses the bet.
             if (choice == 'n') {
                 print_dealer(cout, handDealer);
                 dealers_play(handDealer);
-                
-                //the log for the game is stored in the gamelog text file
-                save_log(fout, count, bet, player, handDealer);
                 
                 //The total values of the dealer's hand and the player's hand are compared
                 //The player loses the bet if he busts
@@ -172,20 +175,12 @@ int main() {
         //The player cannot play anymore if he runs out of money
         if (player.getMoney() == 0) {
             cout << "\nYou have $0. GAME OVER!\nCome back when you have more money.\n\nBye!\n";
-            
-            fout << "\n-----------------------------------------------";
-            fout.close();
-            
             break;
         }
         
         //The player cannot play anymore if the dealer looses 900 or more
         else if (player.getMoney() >= 1000) {
             cout << "\nCongratulations. You beat the casino!\n\nBye!\n";
-            
-            fout << "\n-----------------------------------------------";
-            fout.close();
-            
             break;
         }
         

@@ -22,7 +22,7 @@ Card::Card() {
         default: break;
     }
     
-    r = 1 + rand() % 10;
+    r = 1 + rand() % 13;
     switch (r) {
         case  1: rank = ACE;
             break;
@@ -52,6 +52,11 @@ Card::Card() {
             break;
         default: break;
     }
+
+    if(get_rankName() == "Ace")
+        value = 11;
+    else
+        value = get_rank();
 }
 
 //Accessor: returns a string with the suit of the card
@@ -125,15 +130,19 @@ std::string Card::get_rankName() const {
 
 //Accessor: Assigns a numerical value to card based on rank.
 int Card::get_rank() const {        
+    if(static_cast<int>(rank) > 11 && static_cast<int>(rank) < 15)
+        return 10;
     return static_cast<int>(rank) + 1 ;
 }
 
 //Accessor: Assigns value based on the rank of the card
 int Card::get_value() const {
-    if (get_rankName() == "Ace")
-        return 11;
-    else
-        return static_cast<int>(rank) + 1;
+    return value;
+}
+
+//Mutator: Changes value assigned to card (required for Ace)
+void Card::set_value(int n) {
+    value = n;
 }
 
 //Accessor: Comparison operator for cards

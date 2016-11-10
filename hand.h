@@ -18,9 +18,11 @@ public:
     //Prints the last card stored in the vector of cards
     void printLast() const;
     //Finds the total value of all the cards in a hand
-    double sum() const;
+    int sum() const;
     //Compares the values of two Hand objects
-    bool operator < (Hand hand2) const;
+    bool operator<(Hand hand2) const;
+    //Checks the if the hand has an ace
+    bool hasAce() const;
     
     //Mutators
     //Adds a randomly generated card to the hand
@@ -31,6 +33,8 @@ public:
     void sortHand();
     //Splits a hand into two if two initial cards are identical
     void split();
+    //Flips the value of Ace
+    void changeAce();
     
     //overloading output operator for Hand objects
     friend std::ostream& operator<<(std::ostream& out, Hand& hand);

@@ -21,8 +21,8 @@ void Hand::printLast() const {
 }
 
 //Accessor: Finds the total value of all the cards in a hand
-double Hand::sum() const {
-    double sum = 0.0;
+int Hand::sum() const {
+    int sum = 0.0;
     
     for (int i = 0; i < cards.size(); i++)
         sum += cards[i].get_value();
@@ -31,8 +31,16 @@ double Hand::sum() const {
 }
 
 //Accessor: Compares the values of two Hand objects and returns true if second hand has a higher total value
-bool Hand::operator < (Hand hand2) const {
+bool Hand::operator<(Hand hand2) const {
     return sum() < hand2.sum();
+}
+
+//Accessor: Checks the if the hand has an ace
+bool Hand::hasAce() const {
+    for (int i = 0; i < cards.size(); i++)
+        if(cards[i].get_rankName() == "Ace")
+            return true;
+    return false;    
 }
 
 //Mutator: Adds a randomly generated card to the hand
@@ -50,7 +58,17 @@ void Hand::sortHand() {
     sort(cards.begin(),cards.end());
 }
 
-std::ostream& operator<<(std::ostream& out, Hand& hand){
+//Mutator: Changes the value of Ace card
+void Hand::changeAce() {
+    for (int i = 0; i < cards.size(); i++)
+        if(cards[i].get_rankName() == "Ace" && cards[i].get_value() == 11){
+            cards[i].set_value(1);
+            return;
+        }
+}
+
+//Output operator overloaded for Hand objects
+std::ostream& operator<<(std::ostream& out, Hand& hand) {
     hand.sortHand();//The cards are sorted first
     
     for (int i = 0; i < hand.cards.size(); i++)
