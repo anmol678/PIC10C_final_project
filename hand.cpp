@@ -50,18 +50,11 @@ void Hand::sortHand() {
     sort(cards.begin(),cards.end());
 }
 
-//Prints all the cards in the hand (stored in the vector of cards)
-void Hand::print() {
-    sortHand();//The cards are sorted first
-    for (int i = 0; i < cards.size(); i++)
-        cout << "\t" << std::setw(20) << std::left << cards[i].get_rankName()+" of "+cards[i].get_suit()+"\n";
-}
-
-//Writes all the cards in the hand in the log file
-void Hand::printLog(std::ofstream& fout) {
-    sortHand();//The cards are sorted first
+std::ostream& operator<<(std::ostream& out, Hand& hand){
+    hand.sortHand();//The cards are sorted first
     
-    for (int i = 0; i < cards.size(); i++)
-        fout << "\t" << std::setw(20) << std::left << cards[i].get_rankName()+" of "+cards[i].get_suit()+"\n";
+    for (int i = 0; i < hand.cards.size(); i++)
+        out << "\t" << std::setw(20) << std::left << hand.cards[i].get_rankName()+" of "+hand.cards[i].get_suit()+"\n";
 
+    return out;
 }

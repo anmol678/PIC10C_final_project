@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 #include "cards.h"
 
 #ifndef HAND_H
@@ -31,11 +32,8 @@ public:
     //Splits a hand into two if two initial cards are identical
     void split();
     
-    //Prints all the cards in the hand (stored in the vector of cards)
-    void print();
-    //Writes all the cards in the hand in the log file
-    void printLog(std::ofstream& fout);
-    
+    //overloading output operator for Hand objects
+    friend std::ostream& operator<<(std::ostream& out, Hand& hand);
 private:
     //A vector of Cards
     std::vector<Card> cards;
