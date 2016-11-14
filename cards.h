@@ -7,12 +7,12 @@
 #define CARDS_H
 
 enum suit_t {CLUBS, DIAMONDS, HEARTS, SPADES};
-enum rank_t {ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK = 12, QUEEN = 13, KING = 14};
+enum rank_t {ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING};
 
 class Card {
 public:
-    //Constructor assigns random rank & suit to card.
-    Card();
+    //Constructor assigns suit and rank based on s and r
+    Card(int s, int r);
     
     //Accessors
     //Returns a string with the suit of the card

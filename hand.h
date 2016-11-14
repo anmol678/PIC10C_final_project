@@ -1,9 +1,10 @@
 //hand.h
 
+#include "cards.h"
+#include "deck.h"
 #include <string>
 #include <vector>
 #include <iostream>
-#include "cards.h"
 
 #ifndef HAND_H
 #define HAND_H
@@ -25,8 +26,8 @@ public:
     bool hasAce() const;
     
     //Mutators
-    //Adds a randomly generated card to the hand
-    void drawCard();
+    //Adds a card randomly generated from the deck to the hand
+    void drawCard(Deck x);
     //Resets the hand for a new game
     void resetHand();
     //Sorts the cards in the vector in ascending order based on rank

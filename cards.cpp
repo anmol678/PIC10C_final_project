@@ -7,10 +7,13 @@
 #include <algorithm>
 #include <string>
 
-//Default constructor for the Card class.
-Card::Card() {
-    int r = 1 + rand() % 4;
-    switch (r) {
+//Constructor for the Card class.
+Card::Card(int s, int r) {
+    suit = suit_t[s];
+    rank = rank_t[r];
+
+    /*
+    switch (s) {
         case 1: suit = CLUBS;
             break;
         case 2: suit = DIAMONDS;
@@ -22,7 +25,6 @@ Card::Card() {
         default: break;
     }
     
-    r = 1 + rand() % 13;
     switch (r) {
         case  1: rank = ACE;
             break;
@@ -52,8 +54,9 @@ Card::Card() {
             break;
         default: break;
     }
+    */
 
-    if(get_rankName() == "Ace")
+    if (get_rankName() == "Ace")
         value = 11;
     else
         value = get_rank();
@@ -130,7 +133,7 @@ std::string Card::get_rankName() const {
 
 //Accessor: Assigns a numerical value to card based on rank.
 int Card::get_rank() const {        
-    if(static_cast<int>(rank) > 11 && static_cast<int>(rank) < 15)
+    if(static_cast<int>(rank) > 10 && static_cast<int>(rank) < 14)
         return 10;
     return static_cast<int>(rank) + 1 ;
 }

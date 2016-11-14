@@ -2,6 +2,7 @@
 
 #include "hand.h"
 #include "cards.h"
+#include "deck.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -43,9 +44,9 @@ bool Hand::hasAce() const {
     return false;    
 }
 
-//Mutator: Adds a randomly generated card to the hand
-void Hand::drawCard() {
-    cards.push_back(Card());
+//Mutator: Adds a card randomly generated from the deck to the hand
+void Hand::drawCard(Deck x) {
+    cards.push_back(x.getCard());
 }
 
 //Mutator: Resets the hand for a new game
