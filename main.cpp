@@ -2,12 +2,12 @@
 #include "hand.h"
 #include "player.h"
 #include "deck.h"
-/*
+
 #include "cards.cpp"
 #include "hand.cpp"
 #include "player.cpp"
 #include "deck.cpp"
- */
+ 
 #include <iostream>
 #include <string>
 #include <iomanip>
