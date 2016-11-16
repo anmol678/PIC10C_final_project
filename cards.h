@@ -11,6 +11,7 @@ enum rank_t {ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QU
 
 class Card {
 public:
+    Card();
     //Constructor assigns suit and rank based on s and r
     Card(int s, int r);
     

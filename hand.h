@@ -2,7 +2,6 @@
 
 #include "cards.h"
 #include "deck.h"
-#include <string>
 #include <vector>
 #include <iostream>
 
@@ -12,8 +11,8 @@
 class Hand {
 public:
     //Constructor
-    //Initializes hand of cards with two random cards
-    Hand();
+    //Initializes hand of cards with two random cards from the deck
+    Hand(Deck& deck);
     
     //Accessors
     //Prints the last card stored in the vector of cards
@@ -27,7 +26,7 @@ public:
     
     //Mutators
     //Adds a card randomly generated from the deck to the hand
-    void drawCard(Deck x);
+    void drawCard(Deck& x);
     //Resets the hand for a new game
     void resetHand();
     //Sorts the cards in the vector in ascending order based on rank

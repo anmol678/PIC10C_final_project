@@ -2,23 +2,31 @@
 
 #include "deck.h"
 #include "cards.h"
-#include <cstdlib>
 #include <algorithm>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
 
 //Default constructor intialises all 52 cards in the Deck
 Deck::Deck() {
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 13; j++)
-			deck.push_back(Card(i, j));
+    for (int i = 1; i < 5; i++)
+        for (int j = 1; j < 14; j++)
+            deck.push_back(Card(i, j));
 }
 
 //A random card is returned from the deck
 Card Deck::getCard() {
-	shuffle();
-	return deck.pop_back();
+    shuffle();
+    Card card = deck.back();
+    deck.pop_back();
+    return card;
 }
 
 //Shuffles the deck
 void Deck::shuffle() {
-	std::random_shuffle(deck.begin(), deck.end());
+    std::srand(static_cast<int>(time(0)));
+    std::random_shuffle(deck.begin(), deck.end());
+    
+    int i = rand() % deck.size();
+    std::swap(deck[deck.size()-1], deck[i]);
 }

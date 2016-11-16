@@ -1,12 +1,15 @@
 #include "cards.h"
 #include "hand.h"
 #include "player.h"
+#include "deck.h"
+/*
 #include "cards.cpp"
 #include "hand.cpp"
 #include "player.cpp"
+#include "deck.cpp"
+ */
 #include <iostream>
 #include <string>
-#include <vector>
 #include <iomanip>
 #include <cstdlib>
 #include <ctime>
@@ -43,16 +46,17 @@ bool isBlackjack(Hand& hand) {
 }
 
 //dealer's turn is implemented by this function
-void dealers_play(Hand& dealer) {
+void dealers_play(Hand& dealer, Deck d) {
     while (dealer.sum() < 17){
-    //The dealer continues to draw cards till the total value <= 5.5
-        dealer.drawCard();
+        //The dealer continues to draw cards till the total value <= 5.5
+        dealer.drawCard(d);
         cout << "\nNew card:\n";
         dealer.printLast();//The new card drawn is displayed
         
-    if(dealer.hasAce() && isBust(dealer))
-        dealer.changeAce();
-
+        //If the dealer goes bust and has an ace, sum is recalculated with ace value set to 1
+        if(dealer.hasAce() && isBust(dealer))
+            dealer.changeAce();
+        
         print_dealer(cout, dealer);
     }
 }
@@ -64,7 +68,7 @@ int place_bet(const Player& player) {
     << "Enter bet: ";
     //The bet is input by the player
     cin >> bet;
-
+    
     //If the bet exceeds total money, the player is asked to re-enter the bet
     if (bet > player.getMoney()){
         cout << "You don't have that much money. Please bet again.\n";
@@ -79,21 +83,21 @@ void compare_sum(Player& player, Hand& dealer, int& bet) {
         cout << "\nDealer is bust. You win " << bet << ".\n";
         player.updateMoney(bet);
     }
-                
+    
     //It's a tie if both the player and the dealer don't bust and the values are equal
     else if (player.sum() == dealer.sum()) {
         cout << "\nIt's a push.\n";
     }
-                
+    
     //If both the player and the dealer do not bust:
-     else {
-                    
+    else {
+        
         //The player wins the bet if he closer to 21 than the dealer is
         if (dealer < player) {
             cout << "\nYou win " << bet << ".\n";
             player.updateMoney(bet);
         }
-                    
+        
         //The player loses the bet if the dealer is closer to 21 than he is
         else {
             cout << "\nToo bad. You lose " << bet << ".\n";
@@ -105,7 +109,7 @@ char hit_stand() {
     std::string choice;
     char ret;
     cout << "Do you want another card (hit/stand)? ";
-    cin >> choice; 
+    cin >> choice;
     //Total value of cards is displayed and the player is given a choice to draw another card
     
     if (choice == "hit" || choice == "y")
@@ -114,63 +118,80 @@ char hit_stand() {
         ret ='n';
     else
         ret = hit_stand();
-
+    
     return ret;
 }
 
 int main() {
-    Player player = Player(100); //Player object initialized with amount 100
-    int count = 0; //Keeps track of the number of games played
+    //Player object initialized with amount 100
+    Deck temp;
+    Player player = Player(100, temp);
+    
+    //Keeps track of the number of games played
+    int count = 0;
     
     do {
-        srand(static_cast<int>(time(0)));
+        std::srand(static_cast<int>(time(0)));
         
+        //Keeps track of the game number
         count ++;
         
+        //A new deck for the game is initialised
+        Deck deck = Deck();
         //Hand object for dealer is declared
-        Hand handDealer = Hand();
-        player = Player(player.getMoney());
+        Hand handDealer(deck);
+        //Player is re-intialized for a new game
+        player = Player(player.getMoney(), deck);
         
         char choice;
+        //Player places a bet
         int bet = place_bet(player);
+        
+        //Dealer's last card is revealed to the player
+        cout << "\nDealer's card: \n";
+        handDealer.printLast();
+        
         do {
+            //If the player goes bust and has an ace, sum is recalculated with ace value set to 1
             if(player.hasAce() && isBust(player))
                 player.changeAce();
-
+            
             //The player's cards are displayed
             print_player(cout, player);
-
+            
+            //If the player goes bust he loses
             if (isBust(player)){
                 cout << "\nYou are bust. You lose " << bet << ".\n";
                 player.updateMoney(-bet);
                 break;
             }
             
+            //If the player gets a blackjack he wins
             if (isBlackjack(player)){
                 cout << "\nBlackjack. You win " << bet << ".\n";
                 player.updateMoney(bet);
                 break;
             }
-
+            
+            //Accepts players choice to hit or stand
             choice = hit_stand();
             
-            //If the player declines to draw another card the dealer's cards are displayed and dealer takes the game forward. Subsequently, the total values of player's hand and dealer's hand are compared and it is decided if the player wins or loses the bet.
+            //If the player decides to stand the dealer's cards are displayed and dealer takes the game forward
             if (choice == 'n') {
                 print_dealer(cout, handDealer);
-                dealers_play(handDealer);
+                dealers_play(handDealer, deck);
                 
                 //The total values of the dealer's hand and the player's hand are compared
-                //The player loses the bet if he busts
                 compare_sum(player, handDealer, bet);
             }
             
-            //If the player chooses to draw another card:
+            //If the player hits a card is drawn
             else {
-                player.drawCard();
+                player.drawCard(deck);
                 cout << "\nNew card:\n";
                 player.printLast();
             }
-        } while (choice == 'y');//This loop iterates only if the player opts to draw another card. Otherwise, since the player's turn is over once the dealer draws his cards and values of the two hands are compared the game ends.
+        } while (choice == 'y');//This loop iterates only if the player opts to draw another card, otherwise his turn is over
         
         //The player cannot play anymore if he runs out of money
         if (player.getMoney() == 0) {
@@ -178,7 +199,7 @@ int main() {
             break;
         }
         
-        //The player cannot play anymore if the dealer looses 900 or more
+        //The player cannot play anymore if the casino looses 900 or more
         else if (player.getMoney() >= 1000) {
             cout << "\nCongratulations. You beat the casino!\n\nBye!\n";
             break;
@@ -188,7 +209,7 @@ int main() {
         else {
             continue;
         }
-    } while (player.getMoney() > 0 && player.getMoney() < 1000); //This loop reiterates while the player hasn't lost all his money and the dealer hasn't lost 900 or more. Upon reiteration, new hands for both the player and the dealer are intialized and a new game begins.
+    } while (player.getMoney() > 0 && player.getMoney() < 1000); //This loop reiterates while the player hasn't lost all his money and the dealer hasn't lost 900 or more
     
     return 0;
 }

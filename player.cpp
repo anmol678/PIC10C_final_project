@@ -1,11 +1,12 @@
- //player.cpp
+//player.cpp
 
 #include "player.h"
 #include "hand.h"
 #include "cards.h"
+#include "deck.h"
 
 //Default constructor intializes m amount of money
-Player::Player(int m) {
+Player::Player(int m, Deck& d) : Hand(d){
     money = m;
 }
 
