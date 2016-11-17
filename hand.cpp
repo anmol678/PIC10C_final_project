@@ -6,6 +6,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <vector>
 
 using std::cout;
 
@@ -17,29 +18,28 @@ Hand::Hand(Deck& deck) {
 
 //Accessor: Prints the last card stored in the hand of cards
 void Hand::printLast() const {
-    size_t i = cards.size() - 1;
-    cout << "\t" << std::setw(20) << std::left << cards[i].get_rankName()+" of "+cards[i].get_suit()+"\n";
+    cout << cards[cards.size() - 1];
 }
 
 //Accessor: Finds the total value of all the cards in a hand
 int Hand::sum() const {
     int sum = 0.0;
     
-    for (size_t i = 0; i < cards.size(); i++)
-        sum += cards[i].get_value();
+    for (auto it : cards)
+        sum += it.get_value();
     
     return sum;
 }
 
 //Accessor: Compares the values of two Hand objects and returns true if second hand has a higher total value
 bool Hand::operator<(Hand hand2) const {
-    return sum() < hand2.sum();
+    return (sum() < hand2.sum());
 }
 
 //Accessor: Checks the if the hand has an ace
 bool Hand::hasAce() const {
-    for (size_t i = 0; i < cards.size(); i++)
-        if(cards[i].get_rankName() == "Ace")
+    for (auto it : cards)
+        if(it.get_rankName() == "Ace")
             return true;
     return false;
 }
@@ -72,8 +72,8 @@ void Hand::changeAce() {
 std::ostream& operator<<(std::ostream& out, Hand& hand) {
     hand.sortHand();//The cards are sorted first
     
-    for (size_t i = 0; i < hand.cards.size(); i++)
-        out << "\t" << std::left << hand.cards[i].get_rankName()+" of "+hand.cards[i].get_suit()+"\n";
+    for (auto it : hand.cards)
+        out << it;
     
     return out;
 }

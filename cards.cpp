@@ -150,3 +150,9 @@ void Card::set_value(int n) {
 bool Card::operator < (Card card2) const {
     return rank < card2.rank;
 }
+
+//Output operator overloaded for Card objects
+std::ostream& operator<<(std::ostream& out, const Card card) {
+    out << "\t" << std::left << card.get_rankName()+" of "+card.get_suit()+"\n";
+    return out;
+}

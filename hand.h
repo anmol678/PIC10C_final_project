@@ -31,8 +31,6 @@ public:
     void resetHand();
     //Sorts the cards in the vector in ascending order based on rank
     void sortHand();
-    //Splits a hand into two if two initial cards are identical
-    void split();
     //Flips the value of Ace
     void changeAce();
     

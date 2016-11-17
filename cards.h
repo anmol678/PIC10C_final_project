@@ -21,6 +21,7 @@ public:
     //Returns a string with the rank of the card
     std::string get_rankName() const;
     
+    
     //Converts card rank to number.
     //The possible returns are: 1, 2, 3, 4, 5, 6, 7, 8, 9 and 10
     int get_rank() const;
@@ -36,6 +37,8 @@ public:
     //Useful if you want to sort the cards.
     bool operator < (Card card2) const;
     
+    //overloading output operator for Hand objects
+    friend std::ostream& operator<<(std::ostream& out, const Card card);
 private:
     suit_t suit;
     rank_t rank;
