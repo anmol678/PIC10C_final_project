@@ -73,6 +73,10 @@ int place_bet(const Player& player) {
         cout << "You don't have that much money. Please bet again.\n";
         bet = place_bet(player);
     }
+    else if (bet == 0) {
+        cout << "Place a valid bet.\n";
+        bet = place_bet(player);
+    }
     return bet;
 }
 
@@ -126,7 +130,7 @@ char hit_stand() {
 int main() {
     //Player object initialized with amount 100
     Deck temp;
-    Player player = Player(100, temp);
+    Player player = Player(1000, temp);
     
     //Keeps track of the number of games played
     int count = 0;
@@ -174,6 +178,7 @@ int main() {
                 break;
             }
             
+        label:
             if (choice != 'n')
                 choice = hit_stand();//Accepts players choice to hit or stand
             
@@ -196,13 +201,21 @@ int main() {
             
             //If the player chooses double down the bet is doubled and one last card is drawn
             else {
+                //The player is asked to re-enter his choice if he does not have enough money to double down
+                if (bet*2 > player.getMoney()) {
+                    cout << "\nYou don't have enough money to double down.\n";
+                    goto label;
+                }
+                
+                //The bet is doubled, one last card is drawn and choice is set to 'n' to allow for the dealer's play to take place
                 bet *= 2;
                 player.drawCard(deck);
                 cout << "\nNew card:\n";
                 player.printLast();
                 choice = 'n';
             }
-        } while (choice == 'y' || choice == 'n');//This loop iterates only if the player opts to draw another card, otherwise his turn is over
+        } while (choice == 'y' || choice == 'n');
+        //This loop iterates only if the player opts to draw another card, otherwise his turn is over
         
         //The player cannot play anymore if he runs out of money
         if (player.getMoney() == 0) {
@@ -211,16 +224,16 @@ int main() {
         }
         
         //The player cannot play anymore if the casino looses 900 or more
-        else if (player.getMoney() >= 1000) {
+        else if (player.getMoney() >= 10000) {
             cout << "\nCongratulations. You beat the casino!\n\nBye!\n";
             break;
         }
         
         //If none of the above scenarios apply a new game begins
-        else {
+        else
             continue;
-        }
-    } while (player.getMoney() > 0 && player.getMoney() < 1000); //This loop reiterates while the player hasn't lost all his money and the dealer hasn't lost 900 or more
+    } while (player.getMoney() > 0 && player.getMoney() < 10000);
+    //This loop reiterates while the player hasn't lost all his money and the dealer hasn't lost $9000 or more
     
     return 0;
 }
