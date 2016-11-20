@@ -5,7 +5,6 @@
 #include "deck.h"
 #include <iostream>
 #include <iomanip>
-#include <fstream>
 #include <vector>
 
 using std::cout;
@@ -56,14 +55,14 @@ void Hand::resetHand() {
 
 //Mutator: Sorts the cards in the vector in ascending order based on rank
 void Hand::sortHand() {
-    sort(cards.begin(),cards.end());
+    std::sort(cards.begin(),cards.end());
 }
 
 //Mutator: Changes the value of Ace card
 void Hand::changeAce() {
-    for (size_t i = 0; i < cards.size(); i++)
-        if(cards[i].get_rankName() == "Ace" && cards[i].get_value() == 11){
-            cards[i].set_value(1);
+    for (auto& it : cards)
+        if(it.get_rankName() == "Ace" && it.get_value() == 11){
+            it.set_value(1);
             return;
         }
 }

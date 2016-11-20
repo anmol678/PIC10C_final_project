@@ -2,12 +2,12 @@
 #include "hand.h"
 #include "player.h"
 #include "deck.h"
-/*
+
  #include "cards.cpp"
  #include "hand.cpp"
  #include "player.cpp"
  #include "deck.cpp"
- */
+ 
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -108,6 +108,7 @@ void compare_sum(Player& player, Hand& dealer, int& bet) {
         }
     }
 }
+
 char hit_stand() {
     std::string choice;
     char ret;
@@ -127,22 +128,31 @@ char hit_stand() {
     return ret;
 }
 
+int num_decks() {
+    int n = 0;
+    cout << "\nEnter the number of decks you wish to play with: ";
+    cin >> n;
+
+    if (n == 0 || n > 8 || n < 0) {
+        cout << "\nInvalid number of decks.";
+        n = num_decks();
+    }
+
+    return n;
+}
+
 int main() {
-    //Player object initialized with amount 100
-    Deck temp;
+    //Player object initialized with amount 1000 and an empty Deck
+    Deck temp = Deck(1);
     Player player = Player(1000, temp);
     
-    //Keeps track of the number of games played
-    int count = 0;
-    
+    //Accepts the number of decks from the player
+    int n = num_decks();
     do {
         std::srand(static_cast<int>(time(0)));
-        
-        //Keeps track of the game number
-        count ++;
-        
-        //A new deck for the game is initialised
-        Deck deck = Deck();
+
+        //A new deck for the game is initialised, remember default deck has 4 deck worth of cards stored in it
+        Deck deck(n);
         //Hand object for dealer is declared
         Hand handDealer(deck);
         //Player is re-intialized for a new game

@@ -7,11 +7,12 @@
 #include <cstdlib>
 #include <ctime>
 
-//Default constructor intialises all 52 cards in the Deck
-Deck::Deck() {
-    for (int i = 1; i < 5; i++)
-        for (int j = 1; j < 14; j++)
-            deck.push_back(Card(i, j));
+//Constructor intialises all 52 cards in the Deck, take in an integer value to determine number of decks
+Deck::Deck(int n) {
+    for (int k = 1; k <= n; k++)
+        for (int i = 1; i < 5; i++)
+            for (int j = 1; j < 14; j++)
+                deck.push_back(Card(i, j));
 }
 
 //A random card is returned from the deck

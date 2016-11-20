@@ -8,8 +8,8 @@
 
 class Deck {
 public:
-    //Default constructor intialises all 52 cards in the Deck
-    Deck();
+    //Constructor intialises all 52 cards in the Deck, take in an integer value to determine number of decks
+    Deck(int n = 4);//By default number of decks used for the game is 4, hence 4*52=208 cards are initialised in the Deck object
     
     //Returns a random card from the declk
     Card getCard();
