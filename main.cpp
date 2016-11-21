@@ -3,10 +3,10 @@
 #include "player.h"
 #include "deck.h"
 
- #include "cards.cpp"
- #include "hand.cpp"
- #include "player.cpp"
- #include "deck.cpp"
+#include "cards.cpp"
+#include "hand.cpp"
+#include "player.cpp"
+#include "deck.cpp"
  
 #include <iostream>
 #include <string>
@@ -31,7 +31,6 @@ void print_dealer(std::ostream& out, Hand& dealer) {
     out << "The dealer's total is " << dealer.sum() << ".\n";
 }
 
-/*
 //returns true if the player goes bust (i.e. sum exceeds 21)
 bool isBust(Hand& hand) {
     if (hand.sum() > 21)
@@ -45,7 +44,6 @@ bool isBlackjack(Hand& hand) {
         return true;
     return false;
 }
-*/
 
 //dealer's turn is implemented by this function
 void dealers_play(Hand& dealer, Deck d) {
@@ -143,11 +141,72 @@ int num_decks() {
     return n;
 }
 
-int main() {    
-    //Player object initialized with amount 1000 and an empty Deck
-    Deck temp = Deck(1);
-    Player player = Player(1000, temp);
+bool engine(Deck& deck, Hand& dealer, Player& player, int& bet) {
     
+    char choice = ' ';
+        
+    //Dealer's last card is revealed to the player
+    cout << "\nDealer's card: \n";
+    dealer.printLast();
+    do {
+        //If the player goes bust and has an ace, sum is recalculated with ace value set to 1
+        if (player.hasAce() && isBust(player))
+            player.changeAce();
+        
+        //The player's cards are displayed
+        print_player(cout, player);
+        
+        //If the player goes bust he loses
+        if (isBust(player)) {
+            cout << "\nYou are bust. You lose " << bet << ".\n";
+            player.updateMoney(-bet);
+            return false;
+        }
+        
+        //If the player gets a blackjack he wins
+        if (isBlackjack(player)) {
+            cout << "\nBlackjack. You win " << bet << ".\n";
+            player.updateMoney(bet);
+            return false;
+        }
+        
+        label:
+        if (choice != 'n')
+            choice = hit_stand();//Accepts players choice to hit or stand
+
+        if (choice == 'n')
+            return true;
+            
+        //If the player hits a card is drawn
+        else if (choice == 'y') {
+            player.drawCard(deck);
+            cout << "\nNew card:\n";
+            player.printLast();
+        }
+        
+        //If the player chooses double down the bet is doubled and one last card is drawn
+        else {
+            //The player is asked to re-enter his choice if he does not have enough money to double down
+            if (bet*2 > player.getMoney()) {
+                cout << "\nYou don't have enough money to double down.\n";
+                goto label;
+            }
+            
+            //The bet is doubled, one last card is drawn and choice is set to 'n' to allow for the dealer's play to take place
+            bet *= 2;
+            player.drawCard(deck);
+            cout << "\nNew card:\n";
+            player.printLast();
+            choice = 'n';
+        }
+    } while (choice == 'y' || choice == 'n');
+}
+
+int main() {
+    //Player object initialized with amount 1000 and an empty Deck
+    Deck temp(1);
+    Player player(1000, temp);
+
     //Accepts the number of decks from the player
     int n = num_decks();
     do {
@@ -155,92 +214,25 @@ int main() {
 
         //A new deck for the game is initialised, remember default deck has 4 deck worth of cards stored in it
         Deck deck(n);
+
         //Hand object for dealer is declared
-        Hand handDealer(deck);
-        //Player is re-intialized for a new game
+        Hand dealer(deck);
         player = Player(player.getMoney(), deck);
-        
-        char choice = ' ';
-        //Player places a bet
+
+        //player places the bet
         int bet = place_bet(player);
-        
-        //Dealer's last card is revealed to the player
-        cout << "\nDealer's card: \n";
-        handDealer.printLast();
 
-        //lambda function: returns true if the sum is equal to 21
-        auto isBlackjack = [&](Hand hand){  if (hand.sum() == 21) 
-                                                return true; 
-                                            return false;
-                                         }
+        //The game is carried out for the current deck, dealer and player
+        bool flag = engine(deck, dealer, player, bet);
 
-        //lambda function: returns true if the sum is greater than 21
-        auto isBust = [&](Hand hand){   if (hand.sum() > 21) 
-                                            return true; 
-                                        return false;
-                                    }                         
-        
-        do {
-            //If the player goes bust and has an ace, sum is recalculated with ace value set to 1
-            if (player.hasAce() && isBust(player))
-                player.changeAce();
-            
-            //The player's cards are displayed
-            print_player(cout, player);
-            
-            //If the player goes bust he loses
-            if (isBust(player)) {
-                cout << "\nYou are bust. You lose " << bet << ".\n";
-                player.updateMoney(-bet);
-                break;
-            }
-            
-            //If the player gets a blackjack he wins
-            if (isBlackjack(player)) {
-                cout << "\nBlackjack. You win " << bet << ".\n";
-                player.updateMoney(bet);
-                break;
-            }
-            
-        label:
-            if (choice != 'n')
-                choice = hit_stand();//Accepts players choice to hit or stand
-            
-            //If the player decides to stand the dealer's cards are displayed and dealer takes the game forward
-            if (choice == 'n') {
-                print_dealer(cout, handDealer);
-                dealers_play(handDealer, deck);
-                
-                //The total values of the dealer's hand and the player's hand are compared
-                compare_sum(player, handDealer, bet);
-                break;
-            }
-            
-            //If the player hits a card is drawn
-            else if (choice == 'y') {
-                player.drawCard(deck);
-                cout << "\nNew card:\n";
-                player.printLast();
-            }
-            
-            //If the player chooses double down the bet is doubled and one last card is drawn
-            else {
-                //The player is asked to re-enter his choice if he does not have enough money to double down
-                if (bet*2 > player.getMoney()) {
-                    cout << "\nYou don't have enough money to double down.\n";
-                    goto label;
-                }
-                
-                //The bet is doubled, one last card is drawn and choice is set to 'n' to allow for the dealer's play to take place
-                bet *= 2;
-                player.drawCard(deck);
-                cout << "\nNew card:\n";
-                player.printLast();
-                choice = 'n';
-            }
-        } while (choice == 'y' || choice == 'n');
-        //This loop iterates only if the player opts to draw another card, otherwise his turn is over
-        
+        if (flag) {
+            print_dealer(cout, dealer);
+            dealers_play(dealer, deck);
+
+            //The total values of the dealer's hand and the player's hand are compared
+            compare_sum(player, dealer, bet);
+        }
+
         //The player cannot play anymore if he runs out of money
         if (player.getMoney() == 0) {
             cout << "\nYou have $0. GAME OVER!\nCome back when you have more money.\n\nBye!\n";
@@ -258,6 +250,5 @@ int main() {
             continue;
     } while (player.getMoney() > 0 && player.getMoney() < 10000);
     //This loop reiterates while the player hasn't lost all his money and the dealer hasn't lost $9000 or more
-    
     return 0;
 }
