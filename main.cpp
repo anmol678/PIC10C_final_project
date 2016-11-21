@@ -18,7 +18,7 @@ using std::cout;
 using std::cin;
 
 //prints information about the player's hand to the console
-void print_player(std::ostream& out, Player& player) {
+void print_player(std::ostream& out, Hand& player) {
     out << "\nYour cards: \n";
     out << player;
     out << "Your total is " << player.sum() << ".\n";
@@ -31,6 +31,7 @@ void print_dealer(std::ostream& out, Hand& dealer) {
     out << "The dealer's total is " << dealer.sum() << ".\n";
 }
 
+/*
 //returns true if the player goes bust (i.e. sum exceeds 21)
 bool isBust(Hand& hand) {
     if (hand.sum() > 21)
@@ -44,6 +45,7 @@ bool isBlackjack(Hand& hand) {
         return true;
     return false;
 }
+*/
 
 //dealer's turn is implemented by this function
 void dealers_play(Hand& dealer, Deck d) {
@@ -141,7 +143,7 @@ int num_decks() {
     return n;
 }
 
-int main() {
+int main() {    
     //Player object initialized with amount 1000 and an empty Deck
     Deck temp = Deck(1);
     Player player = Player(1000, temp);
@@ -165,6 +167,18 @@ int main() {
         //Dealer's last card is revealed to the player
         cout << "\nDealer's card: \n";
         handDealer.printLast();
+
+        //lambda function: returns true if the sum is equal to 21
+        auto isBlackjack = [&](Hand hand){  if (hand.sum() == 21) 
+                                                return true; 
+                                            return false;
+                                         }
+
+        //lambda function: returns true if the sum is greater than 21
+        auto isBust = [&](Hand hand){   if (hand.sum() > 21) 
+                                            return true; 
+                                        return false;
+                                    }                         
         
         do {
             //If the player goes bust and has an ace, sum is recalculated with ace value set to 1
