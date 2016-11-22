@@ -6,6 +6,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <numeric>
 
 using std::cout;
 
@@ -22,10 +23,16 @@ void Hand::printLast() const {
 
 //Accessor: Finds the total value of all the cards in a hand
 int Hand::sum() const {
-    int sum = 0.0;
-    
-    for (auto it : cards)
-        sum += it.get_value();
+    int sum = 0;
+
+    class cal_sum {
+    public:
+        int operator()(int sum, Card x) const {
+            return (sum += x.get_value());
+        }
+    };
+
+    sum = std::accumulate(cards.begin(), cards.end(), 0, cal_sum());
     
     return sum;
 }
