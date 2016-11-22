@@ -32,18 +32,10 @@ void print_dealer(std::ostream& out, Hand& dealer) {
 }
 
 //returns true if the player goes bust (i.e. sum exceeds 21)
-bool isBust(Hand& hand) {
-    if (hand.sum() > 21)
-        return true;
-    return false;
-}
+auto isBust = [](Hand hand){if (hand.sum() > 21) return true; return false;};
 
 //returns true if the player's sum = 21
-bool isBlackjack(Hand& hand) {
-    if (hand.sum() == 21)
-        return true;
-    return false;
-}
+auto isBlackjack = [](Hand hand){if (hand.sum() == 21) return true; return false;};
 
 //dealer's turn is implemented by this function
 void dealers_play(Hand& dealer, Deck d) {
@@ -132,19 +124,19 @@ int num_decks() {
     int n = 0;
     cout << "\nEnter the number of decks you wish to play with: ";
     cin >> n;
-
+    
     if (n == 0 || n > 8 || n < 0) {
         cout << "\nInvalid number of decks.";
         n = num_decks();
     }
-
+    
     return n;
 }
 
 bool engine(Deck& deck, Hand& dealer, Player& player, int& bet) {
     
     char choice = ' ';
-        
+    
     //Dealer's last card is revealed to the player
     cout << "\nDealer's card: \n";
     dealer.printLast();
@@ -170,13 +162,13 @@ bool engine(Deck& deck, Hand& dealer, Player& player, int& bet) {
             return false;
         }
         
-        label:
+    label:
         if (choice != 'n')
             choice = hit_stand();//Accepts players choice to hit or stand
-
+        
         if (choice == 'n')
             return true;
-            
+        
         //If the player hits a card is drawn
         else if (choice == 'y') {
             player.drawCard(deck);
@@ -200,39 +192,41 @@ bool engine(Deck& deck, Hand& dealer, Player& player, int& bet) {
             choice = 'n';
         }
     } while (choice == 'y' || choice == 'n');
+    
+    return false;
 }
 
 int main() {
     //Player object initialized with amount 1000 and an empty Deck
     Deck temp(1);
     Player player(1000, temp);
-
+    
     //Accepts the number of decks from the player
     int n = num_decks();
     do {
         std::srand(static_cast<int>(time(0)));
-
+        
         //A new deck for the game is initialised, remember default deck has 4 deck worth of cards stored in it
         Deck deck(n);
-
+        
         //Hand object for dealer is declared
         Hand dealer(deck);
         player = Player(player.getMoney(), deck);
-
+        
         //player places the bet
         int bet = place_bet(player);
-
+        
         //The game is carried out for the current deck, dealer and player
         bool flag = engine(deck, dealer, player, bet);
-
+        
         if (flag) {
             print_dealer(cout, dealer);
             dealers_play(dealer, deck);
-
+            
             //The total values of the dealer's hand and the player's hand are compared
             compare_sum(player, dealer, bet);
         }
-
+        
         //The player cannot play anymore if he runs out of money
         if (player.getMoney() == 0) {
             cout << "\nYou have $0. GAME OVER!\nCome back when you have more money.\n\nBye!\n";
