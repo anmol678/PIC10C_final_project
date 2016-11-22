@@ -86,8 +86,9 @@ std::ostream& operator<<(std::ostream& out, Hand& hand) {
     auto sortHand = [&](){ std::sort(hand.cards.begin(),hand.cards.end()); };
     sortHand();
     
-    for (auto it : hand.cards)
-        out << it;//note that the output operator is overloaded for Card objects as well
+    //for_each algorithm with a lambda function to print each Card stored in the vector of cards in the Hand object
+    for_each (hand.cards.begin(), hand.cards.end(), [&](Card x){out << x;});
+    //note that the output operator is overloaded for Card objects as well
     
     return out;
 }
