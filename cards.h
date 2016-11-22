@@ -20,24 +20,20 @@ public:
     std::string get_suit() const;
     //Returns a string with the rank of the card
     std::string get_rankName() const;
-    
-    
-    //Converts card rank to number.
-    //The possible returns are: 1, 2, 3, 4, 5, 6, 7, 8, 9 and 10
+    //Converts Card rank to number.
     int get_rank() const;
-    
-    //Converts card rank to value.
-    //The possible returns are: 1, 2, 3, 4, 5, 6, 7, 8, 9 and 10
+    //Converts Card rank to value.
     int get_value() const;
-    //Changes value of card as in case of Ace
+    
+    //Mutator
+    //Changes value of Card as in case of Ace
     void set_value(int n);
     
     //Compare rank of two cards. E.g: Eight<Jack is true.
     //Assume Ace is always 11.
-    //Useful if you want to sort the cards.
     bool operator < (Card card2) const;
     
-    //overloading output operator for Hand objects
+    //overloading output operator for Card objects
     friend std::ostream& operator<<(std::ostream& out, const Card card);
 private:
     suit_t suit;

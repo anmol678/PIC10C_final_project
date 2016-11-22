@@ -3,8 +3,6 @@
 #include "cards.h"
 #include "hand.h"
 #include "deck.h"
-#include <string>
-#include <vector>
 
 #ifndef PLAYER_H
 #define PLAYER_H

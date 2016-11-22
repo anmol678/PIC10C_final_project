@@ -3,13 +3,11 @@
 #include "cards.h"
 #include <iostream>
 #include <iomanip>
-#include <algorithm>
 #include <string>
 
-Card::Card() {
-}
+Card::Card() {}
 
-//Constructor for the Card class.
+//Constructor for the Card class takes in two randomly generated int values and assignes rank and suit based on them
 Card::Card(int s, int r) {
     switch (s) {
         case 1: suit = CLUBS;

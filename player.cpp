@@ -5,7 +5,7 @@
 #include "cards.h"
 #include "deck.h"
 
-//Default constructor intializes m amount of money
+//Constructor intializes m amount of money
 Player::Player(int m, Deck& d) : Hand(d){
     money = m;
 }
