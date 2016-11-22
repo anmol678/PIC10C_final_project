@@ -34,10 +34,10 @@ void print_dealer(std::ostream& out, Hand& dealer) {
 }
 
 //returns true if the player goes bust (i.e. sum exceeds 21)
-auto isBust = [](Hand hand){if (hand.sum() > 21) return true; return false;};
+auto isBust = [](Hand hand){ return hand.sum() > 21;};
 
 //returns true if the player's sum = 21
-auto isBlackjack = [](Hand hand){if (hand.sum() == 21) return true; return false;};
+auto isBlackjack = [](Hand hand){return hand.sum() == 21;};
 
 //dealer's turn is implemented by this function
 void dealers_play(Hand& dealer, Deck d) {
