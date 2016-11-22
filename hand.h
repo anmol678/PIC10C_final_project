@@ -27,10 +27,6 @@ public:
     //Mutators
     //Adds a card randomly generated from the deck to the hand
     void drawCard(Deck& x);
-    //Resets the hand for a new game
-    void resetHand();
-    //Sorts the cards in the vector in ascending order based on rank
-    void sortHand();
     //Flips the value of Ace
     void changeAce();
     

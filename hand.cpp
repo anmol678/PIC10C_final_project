@@ -55,16 +55,6 @@ void Hand::drawCard(Deck& x) {
     cards.push_back(x.getCard());
 }
 
-//Mutator: Resets the hand for a new game
-void Hand::resetHand() {
-    cards.resize(0);
-}
-
-//Mutator: Sorts the cards in the vector in ascending order based on rank
-void Hand::sortHand() {
-    std::sort(cards.begin(),cards.end());
-}
-
 //Mutator: Changes the value of Ace card
 void Hand::changeAce() {
     for (auto& it : cards)
@@ -76,7 +66,8 @@ void Hand::changeAce() {
 
 //Output operator overloaded for Hand objects
 std::ostream& operator<<(std::ostream& out, Hand& hand) {
-    hand.sortHand();//The cards are sorted first
+    auto sortHand = [&](){ std::sort(cards.begin(),cards.end()); }
+    sortHand();//The cards are sorted first
     
     for (auto it : hand.cards)
         out << it;

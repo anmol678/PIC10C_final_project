@@ -18,6 +18,7 @@ Deck::Deck(int n) {
 //A random card is returned from the deck
 Card Deck::getCard() {
     shuffle();
+    
     Card card = deck.back();
     deck.pop_back();
     return card;
