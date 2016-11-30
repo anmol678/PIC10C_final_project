@@ -15,6 +15,7 @@
 #include <iomanip>
 #include <cstdlib>
 #include <ctime>
+#include <limits>
 
 using std::cout;
 using std::cin;
@@ -255,26 +256,23 @@ void blackjack() {
 }
 
 void sim_draw(Deck& deck, Hand& player) {
-        draw_print(cout, player, deck);
-        
-        //If the player goes bust and has an ace, sum is recalculated with ace value set to 1
-        if(player.hasAce() && isBust(player))
-            player.changeAce();
-        
-        print_player(cout, player);
+    draw_print(cout, player, deck);
+    
+    //If the player goes bust and has an ace, sum is recalculated with ace value set to 1
+    if(player.hasAce() && isBust(player))
+        player.changeAce();
+    
+    print_player(cout, player);
 }
 
 //dumb player implementation for simulation
 bool dumb(Deck& deck, Player& player) {
     print_player(cout, player);
     
-    while (player.sum() <= 17) {
-        //The dumb player continues to draw cards till the total value <= 17
+    while (player.sum() <= 17) {//The dumb player continues to draw cards till the total value <= 17
     label:
         sim_draw(deck, player);
     }
-    
-    //However for our dumb player to be truly dumb he should randomly draw a card even when the sum is >= 17
     
     if (isBust(player)) {
         cout << "Dumb player is bust\n";
@@ -288,6 +286,7 @@ bool dumb(Deck& deck, Player& player) {
         return false;
     }
     
+    //For our dumb player to be truly dumb he should randomly draw a card even when the sum is >= 17
     std::srand(static_cast<int>(time(0)));
     int r = rand() % 100;
     if (r%2 == 0)
@@ -304,9 +303,8 @@ bool smart(Deck& deck, Player& player, Hand& dealer) {
     
     print_player(cout, player);
     
-    //when the total value is 15 the highest card required for a blackjack is 6 (note that count is incremented for card with value 6 or less)
-    while (player.sum() < 15 ) {
-        //The smart player continues to draw cards till the total value < 15
+    //when the total value is 15 the highest card required for a blackjack is 6 (note that count is incremented for card with value 6 or less while counting cards)
+    while (player.sum() < 15 ) {//The smart player continues to draw cards till the total value < 15
     label:
         sim_draw(deck, player);
     }
@@ -326,17 +324,17 @@ bool smart(Deck& deck, Player& player, Hand& dealer) {
     int count = 0;//keeps count while counting cards
     dealer.cardCounting(count);
     player.cardCounting(count);
-   // count /= deck.numDecks();
+    // count /= deck.numDecks();
     
     //if count > 0 player has an advantage hence another card is drawn. however if count is equal to a small positive value and the sum is already very high the player might go bust.
     if ((count > 0 && player.sum() < 18) || count > 10)
         goto label;
     else if (count == 0 && player.sum() < 18) { //if the smart player is not at a clear advantage whether or not it withdraws a card is randomised
         /*std::srand(static_cast<int>(time(0)));
-        int r = rand() % 100;
-        
-        if (r%2 == 1)*/
-            goto label;
+         int r = rand() % 100;
+         
+         if (r%2 == 1)*/
+        goto label;
     }
     //if count < 0 dealer has advantage hence player does not draw another card
     else
@@ -345,16 +343,20 @@ bool smart(Deck& deck, Player& player, Hand& dealer) {
     return true;
 }
 
-int main() {
+int simulation() {
     Deck temp(1);
     Player player(10, temp);
     
     //Accepts the number of decks from the player
-   // int n = num_decks();
+    //int n = num_decks();
     int num = 0;
-    
-    cout << "Enter 1 for dumb player and 0 for smart player: ";
-    cin >> num;
+    do {
+        cout << "\nChoose an option: \n"
+        << "1 - Dumb Player Simulation\n"
+        << "2 - Smart Player Simulation\n"
+        << "Enter Choice: ";
+        cin >> num;
+    } while (num != 1 && num!=2);
     
     for(int i = 0 ; i < 10; ++i){
         Deck deck;
@@ -362,7 +364,7 @@ int main() {
         player = Player(player.getMoney(), deck);
         
         bool flag = false;
-        if (num == 0)
+        if (num == 1)
             flag = smart(deck, player, dealer);
         else
             flag = dumb(deck, player);
@@ -376,4 +378,37 @@ int main() {
     }
     
     cout << "\n" << player.getMoney();
+    
+    return 0;
+}
+
+int main() {
+    int choice;
+    bool invalid = false;
+    
+    do {
+        cout << "\nChoose an option: \n"
+        << "1 - Play single player Blackjack\n"
+        << "2 - Run Blackjack simulations\n"
+        << "3 - Quit\n"
+        << "Enter choice: ";
+        cin >> choice;
+        
+        switch (choice) {
+            case 1:
+                blackjack();
+                break;
+            case 2:
+                simulation();
+                break;
+            case 3:
+                return 0;
+            default:
+                cout << "Invalid choice\n";
+                invalid = true;
+                break;
+        }
+    } while(invalid);
+    
+    return 0;
 }
