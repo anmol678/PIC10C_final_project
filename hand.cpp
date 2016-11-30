@@ -28,9 +28,7 @@ int Hand::sum() const {
     //function object to retrieve the value of a Card and add it to the sum
     class cal_sum {
     public:
-        int operator()(int sum, Card x) const {
-            return (sum += x.get_value());
-        }
+        int operator()(int sum, Card x) const { return (sum += x.get_value()); }
     };
     
     //the functor cal_sum is called in the accumulate algorithm which collects the sum of the Hand for us
@@ -63,6 +61,24 @@ bool Hand::hasAce() const {
          */
         
     return false;
+}
+
+//Accessor: Returns the number of cards in the vector of Cards
+size_t Hand::length() const {
+    return cards.size();
+}
+
+//Accessor: Card counting algorithm
+void Hand::cardCounting(int& count) {
+    for (auto& it : cards) {
+        int val = it.get_value();
+        if (val > 9 || val == 1)
+            --count;
+        else if (val > 6)
+            continue;
+        else
+            ++count;
+    }
 }
 
 //Mutator: Adds a card randomly generated from given the Deck to the hand

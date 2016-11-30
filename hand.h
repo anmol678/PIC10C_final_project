@@ -23,7 +23,11 @@ public:
     bool operator<(Hand hand2) const;
     //Checks the if the hand has an ace
     bool hasAce() const;
-    
+    //Returns the number of cards in the vector of Cards
+    size_t length() const;
+    //Card counting algorithm: counter variable count is modified according to the value of the card
+    void cardCounting(int& count);
+
     //Mutators
     //Adds a card randomly generated from the deck to the hand
     void drawCard(Deck& x);
@@ -32,6 +36,7 @@ public:
     
     //overloading output operator for Hand objects
     friend std::ostream& operator<<(std::ostream& out, Hand& hand);
+    
 private:
     //A vector of Cards
     std::vector<Card> cards;

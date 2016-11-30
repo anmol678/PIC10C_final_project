@@ -4,12 +4,12 @@
 #include "deck.h"
 
 /*
-#include "cards.cpp"
-#include "hand.cpp"
-#include "player.cpp"
-#include "deck.cpp"
-*/
- 
+ #include "cards.cpp"
+ #include "hand.cpp"
+ #include "player.cpp"
+ #include "deck.cpp"
+ */
+
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -33,6 +33,13 @@ void print_dealer(std::ostream& out, Hand& dealer) {
     out << "The dealer's total is " << dealer.sum() << ".\n";
 }
 
+//draws a new card for the given Hand from the given Deck and prints the new card
+void draw_print(std::ostream& out, Hand& x, Deck& d) {
+    x.drawCard(d);
+    cout << "\nNew card:\n";
+    x.printLast();
+}
+
 //returns true if the player goes bust (i.e. sum exceeds 21)
 auto isBust = [](Hand hand){ return hand.sum() > 21;};
 
@@ -42,10 +49,8 @@ auto isBlackjack = [](Hand hand){return hand.sum() == 21;};
 //dealer's turn is implemented by this function
 void dealers_play(Hand& dealer, Deck d) {
     while (dealer.sum() < 17) {
-        //The dealer continues to draw cards till the total value <= 5.5
-        dealer.drawCard(d);
-        cout << "\nNew card:\n";
-        dealer.printLast();//The new card drawn is displayed
+        //The dealer continues to draw cards till the total value <= 17
+        draw_print(cout, dealer, d);
         
         //If the dealer goes bust and has an ace, sum is recalculated with ace value set to 1
         if(dealer.hasAce() && isBust(dealer))
@@ -103,12 +108,13 @@ void compare_sum(Player& player, Hand& dealer, int& bet) {
     }
 }
 
+//accepts user input for what course of action to take
 char hit_stand() {
     std::string choice;
     char ret;
     cout << "Do you want another card (hit/stand/double down)? ";
     cin >> choice;
-    //Total value of cards is displayed and the player is given a choice to draw another card
+    //After total value of cards is displayed the player is given a choice to draw another card
     
     if (choice == "hit" || choice == "y")
         ret = 'y';
@@ -120,8 +126,10 @@ char hit_stand() {
         ret = hit_stand();
     
     return ret;
+    //user choice is returned as char variable
 }
 
+//accepts input from user for the number of decks he wishes to play with
 int num_decks() {
     int n = 0;
     cout << "\nEnter the number of decks you wish to play with: ";
@@ -135,6 +143,7 @@ int num_decks() {
     return n;
 }
 
+//essentially implements the aspect of the game that interacts and accepts various inputs from the player
 bool engine(Deck& deck, Hand& dealer, Player& player, int& bet) {
     
     char choice = ' ';
@@ -173,9 +182,7 @@ bool engine(Deck& deck, Hand& dealer, Player& player, int& bet) {
         
         //If the player hits a card is drawn
         else if (choice == 'y') {
-            player.drawCard(deck);
-            cout << "\nNew card:\n";
-            player.printLast();
+            draw_print(cout, player, deck);
         }
         
         //If the player chooses double down the bet is doubled and one last card is drawn
@@ -188,9 +195,7 @@ bool engine(Deck& deck, Hand& dealer, Player& player, int& bet) {
             
             //The bet is doubled, one last card is drawn and choice is set to 'n' to allow for the dealer's play to take place
             bet *= 2;
-            player.drawCard(deck);
-            cout << "\nNew card:\n";
-            player.printLast();
+            draw_print(cout, player, deck);
             choice = 'n';
         }
     } while (choice == 'y' || choice == 'n');
@@ -198,7 +203,8 @@ bool engine(Deck& deck, Hand& dealer, Player& player, int& bet) {
     return false;
 }
 
-int main() {
+//the primary function for blackjack game
+void blackjack() {
     //Player object initialized with amount 1000 and an empty Deck
     Deck temp(1);
     Player player(1000, temp);
@@ -246,5 +252,128 @@ int main() {
             continue;
     } while (player.getMoney() > 0 && player.getMoney() < 10000);
     //This loop reiterates while the player hasn't lost all his money and the dealer hasn't lost $9000 or more
-    return 0;
+}
+
+void sim_draw(Deck& deck, Hand& player) {
+        draw_print(cout, player, deck);
+        
+        //If the player goes bust and has an ace, sum is recalculated with ace value set to 1
+        if(player.hasAce() && isBust(player))
+            player.changeAce();
+        
+        print_player(cout, player);
+}
+
+//dumb player implementation for simulation
+bool dumb(Deck& deck, Player& player) {
+    print_player(cout, player);
+    
+    while (player.sum() <= 17) {
+        //The dumb player continues to draw cards till the total value <= 17
+    label:
+        sim_draw(deck, player);
+    }
+    
+    //However for our dumb player to be truly dumb he should randomly draw a card even when the sum is >= 17
+    
+    if (isBust(player)) {
+        cout << "Dumb player is bust\n";
+        player.updateMoney(-1);
+        return false;
+    }
+    
+    if (isBlackjack(player)) {
+        cout << "Dumb player blackjack\n";
+        player.updateMoney(1);
+        return false;
+    }
+    
+    std::srand(static_cast<int>(time(0)));
+    int r = rand() % 100;
+    if (r%2 == 0)
+        goto label;
+    
+    return true;
+}
+
+//smart player implementation for simulation
+bool smart(Deck& deck, Player& player, Hand& dealer) {
+    //If the player draws two aces, he is bust by default, sum is recalculated with one ace value set to 1
+    if(player.hasAce() && isBust(player))
+        player.changeAce();
+    
+    print_player(cout, player);
+    
+    //when the total value is 15 the highest card required for a blackjack is 6 (note that count is incremented for card with value 6 or less)
+    while (player.sum() < 15 ) {
+        //The smart player continues to draw cards till the total value < 15
+    label:
+        sim_draw(deck, player);
+    }
+    
+    if (isBust(player)) {
+        cout << "Smart player is bust\n";
+        player.updateMoney(-1);
+        return false;
+    }
+    
+    if (isBlackjack(player)) {
+        cout << "Smart player blackjack\n";
+        player.updateMoney(1);
+        return false;
+    }
+    
+    int count = 0;//keeps count while counting cards
+    dealer.cardCounting(count);
+    player.cardCounting(count);
+   // count /= deck.numDecks();
+    
+    //if count > 0 player has an advantage hence another card is drawn. however if count is equal to a small positive value and the sum is already very high the player might go bust.
+    if ((count > 0 && player.sum() < 18) || count > 10)
+        goto label;
+    else if (count == 0 && player.sum() < 18) { //if the smart player is not at a clear advantage whether or not it withdraws a card is randomised
+        /*std::srand(static_cast<int>(time(0)));
+        int r = rand() % 100;
+        
+        if (r%2 == 1)*/
+            goto label;
+    }
+    //if count < 0 dealer has advantage hence player does not draw another card
+    else
+        return true;
+    
+    return true;
+}
+
+int main() {
+    Deck temp(1);
+    Player player(10, temp);
+    
+    //Accepts the number of decks from the player
+   // int n = num_decks();
+    int num = 0;
+    
+    cout << "Enter 1 for dumb player and 0 for smart player: ";
+    cin >> num;
+    
+    for(int i = 0 ; i < 10; ++i){
+        Deck deck;
+        Hand dealer(deck);
+        player = Player(player.getMoney(), deck);
+        
+        bool flag = false;
+        if (num == 0)
+            flag = smart(deck, player, dealer);
+        else
+            flag = dumb(deck, player);
+        
+        if (flag) {
+            print_dealer(cout, dealer);
+            dealers_play(dealer, deck);
+            int bet = 1;
+            compare_sum(player, dealer, bet);
+        }
+    }
+    
+    cout << "\n" << player.getMoney();
 }

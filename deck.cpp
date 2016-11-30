@@ -15,6 +15,11 @@ Deck::Deck(int n) {
                 deck.push_back(Card(i, j));
 }
 
+//Accessor: Returns the number of decks used
+int Deck::numDecks() const {
+    return deck.size()/52;
+}
+
 //Mutator: A random card is returned from the deck
 Card Deck::getCard() {
     shuffle();
