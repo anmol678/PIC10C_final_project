@@ -17,6 +17,8 @@ Deck::Deck(int n) {
 
 //Accessor: Returns the number of decks used
 int Deck::numDecks() const {
+    if ((deck.size()/52) == 0)
+        return 1;
     return deck.size()/52;
 }
 

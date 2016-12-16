@@ -15,7 +15,7 @@
 #include <iomanip>
 #include <cstdlib>
 #include <ctime>
-#include <limits>
+#include <fstream>
 
 using std::cout;
 using std::cin;
@@ -256,13 +256,13 @@ void blackjack() {
 }
 
 void sim_draw(Deck& deck, Hand& player) {
-    draw_print(cout, player, deck);
-    
-    //If the player goes bust and has an ace, sum is recalculated with ace value set to 1
-    if(player.hasAce() && isBust(player))
-        player.changeAce();
-    
-    print_player(cout, player);
+        draw_print(cout, player, deck);
+        
+        //If the player goes bust and has an ace, sum is recalculated with ace value set to 1
+        if(player.hasAce() && isBust(player))
+            player.changeAce();
+        
+        print_player(cout, player);
 }
 
 //dumb player implementation for simulation
@@ -276,13 +276,13 @@ bool dumb(Deck& deck, Player& player) {
     
     if (isBust(player)) {
         cout << "Dumb player is bust\n";
-        player.updateMoney(-1);
+        player.updateMoney(-0.5 * player.getMoney());
         return false;
     }
     
     if (isBlackjack(player)) {
         cout << "Dumb player blackjack\n";
-        player.updateMoney(1);
+        player.updateMoney(0.5 * player.getMoney());
         return false;
     }
     
@@ -311,13 +311,13 @@ bool smart(Deck& deck, Player& player, Hand& dealer) {
     
     if (isBust(player)) {
         cout << "Smart player is bust\n";
-        player.updateMoney(-1);
+        player.updateMoney(-0.5 * player.getMoney());
         return false;
     }
     
     if (isBlackjack(player)) {
         cout << "Smart player blackjack\n";
-        player.updateMoney(1);
+        player.updateMoney(0.5 * player.getMoney());
         return false;
     }
     
@@ -331,10 +331,10 @@ bool smart(Deck& deck, Player& player, Hand& dealer) {
         goto label;
     else if (count == 0 && player.sum() < 18) { //if the smart player is not at a clear advantage whether or not it withdraws a card is randomised
         /*std::srand(static_cast<int>(time(0)));
-         int r = rand() % 100;
-         
-         if (r%2 == 1)*/
-        goto label;
+        int r = rand() % 100;
+        
+        if (r%2 == 1)*/
+            goto label;
     }
     //if count < 0 dealer has advantage hence player does not draw another card
     else
@@ -343,22 +343,35 @@ bool smart(Deck& deck, Player& player, Hand& dealer) {
     return true;
 }
 
+//dealer's play in the simulation
+void sim_dealer(Player& player, Hand& dealer, Deck& deck, bool flag) {
+    if (flag) {
+        print_dealer(cout, dealer);
+        dealers_play(dealer, deck);
+        int bet = 0.5 * player.getMoney();
+        compare_sum(player, dealer, bet);
+    }
+    return;
+}
+
+//main function for all simulations of blackjack
 int simulation() {
+    std::ofstream fout;
+    
     Deck temp(1);
     Player player(10, temp);
     
-    //Accepts the number of decks from the player
-    //int n = num_decks();
     int num = 0;
     do {
         cout << "\nChoose an option: \n"
         << "1 - Dumb Player Simulation\n"
         << "2 - Smart Player Simulation\n"
+        << "3 - Dumb and Smart Player Simulation\n"
         << "Enter Choice: ";
         cin >> num;
-    } while (num != 1 && num!=2);
+    } while (num != 1 && num != 2 && num != 3);
     
-    for(int i = 0 ; i < 10; ++i){
+    //for(int i = 0 ; i < 10; ++i){
         Deck deck;
         Hand dealer(deck);
         player = Player(player.getMoney(), deck);
@@ -366,16 +379,36 @@ int simulation() {
         bool flag = false;
         if (num == 1)
             flag = smart(deck, player, dealer);
-        else
+        else if (num == 2)
             flag = dumb(deck, player);
-        
-        if (flag) {
-            print_dealer(cout, dealer);
-            dealers_play(dealer, deck);
-            int bet = 1;
-            compare_sum(player, dealer, bet);
+        else {
+            fout.open("log.txt");
+            int base_money = 10;
+            for (int i = 0; i < 100; i++) {
+                base_money += 5;
+                fout << base_money;
+                
+                Deck deck;
+                dealer = Hand(deck);
+                
+                player = Player(base_money, deck);
+                flag = dumb(deck, player);
+                sim_dealer(player, dealer, deck, flag);
+                fout << "\t" << player.getMoney();
+                
+                player = Player(base_money, deck);
+                flag = smart(deck, player, dealer);
+                sim_dealer(player, dealer, deck, flag);
+                fout << "\t" << player.getMoney();
+                
+                fout << "\n";
+                flag = false;
+            }
+            
+            fout.close();
         }
-    }
+    
+        sim_dealer(player, dealer, deck, flag);
     
     cout << "\n" << player.getMoney();
     
@@ -400,6 +433,7 @@ int main() {
                 break;
             case 2:
                 simulation();
+                cout << "\nSimulation Completed";
                 break;
             case 3:
                 return 0;
